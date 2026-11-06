@@ -118,12 +118,11 @@ h1 { margin-bottom: 7px; color: #183943; font-size: clamp(26px, 2.5vw, 33px); fo
 .jobs-table tbody tr { border-top: 1px solid #edf1f1; }
 .jobs-table tbody tr:hover { background: #f9fbfb; }
 .jobs-table td { padding: 13px 11px; color: #4e636b; font-size: 10px; vertical-align: top; }
-.job-title { display: flex; align-items: flex-start; gap: 9px; min-width: 170px; }
-.job-platform { display: grid; place-items: center; width: 24px; height: 24px; flex: 0 0 24px; border-radius: 6px; color: #215a71; background: #e6f0f3; font-size: 9px; font-weight: 750; letter-spacing: -0.5px; }
-.job-title > div { display: grid; gap: 4px; min-width: 0; }
-.job-title strong { overflow: hidden; color: #304951; font-size: 10px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
-.job-title div span { display: block; max-width: 240px; overflow: hidden; color: #859398; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-.job-failure { display: flex; gap: 5px; max-width: 280px; margin: 7px 0 0 33px; color: #a95850; font-size: 9px; line-height: 1.4; }
+.job-title { display: flex; align-items: center; min-width: 170px; }
+.job-title > div { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.job-title strong { min-width: 0; overflow: hidden; color: #304951; font-size: 10px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.job-platform { flex: 0 0 auto; padding: 2px 5px; border-radius: 4px; color: #397181; background: #edf5f5; font-size: 8px; font-weight: 650; white-space: nowrap; }
+.job-failure { display: flex; gap: 5px; max-width: 280px; margin: 7px 0 0; color: #a95850; font-size: 9px; line-height: 1.4; }
 .job-failure svg { flex: 0 0 14px; }
 .status-badge { @apply inline-flex items-center gap-1.5 rounded-md; min-height: 22px; padding: 0 7px; font-size: 9px; white-space: nowrap; }
 .status-pending, .status-queued { color: #896342; background: #f8f0e4; }
@@ -154,11 +153,9 @@ h1 { margin-bottom: 7px; color: #183943; font-size: clamp(26px, 2.5vw, 33px); fo
 .preset-row + .preset-row { border-top: 1px solid #edf1f1; }
 .preset-row:hover { background: #f8fafa; }
 .preset-initial { display: grid; place-items: center; width: 29px; height: 29px; flex: 0 0 29px; border-radius: 8px; color: #316d7c; background: #dfecee; font-size: 11px; font-weight: 700; }
-.preset-item-copy { display: grid; gap: 3px; min-width: 0; flex: 1; }
+.preset-item-copy { display: flex; align-items: center; gap: 7px; min-width: 0; flex: 1; }
 .preset-item-copy strong { overflow: hidden; color: #334c54; font-size: 10px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
-.preset-item-copy span { overflow: hidden; color: #87969a; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-.preset-item-copy .platform-badge { width: fit-content; padding: 2px 5px; border-radius: 4px; color: #397181; background: #edf5f5; font-size: 8px; font-weight: 650; }
-.preset-item-copy small { overflow: hidden; color: #9aa6a9; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.preset-item-copy .platform-badge { display: inline-flex; flex: 0 0 auto; width: fit-content; padding: 2px 5px; border-radius: 4px; color: #397181; background: #edf5f5; font-size: 8px; font-weight: 650; white-space: nowrap; }
 .preset-row-actions { @apply flex items-center gap-1.5; margin-left: auto; }
 .preset-row-actions .icon-button, .preset-row-actions .icon-danger { width: 30px; height: 30px; }
 .preset-delete-confirm { @apply flex items-center gap-1.5; margin-left: auto; }
@@ -245,10 +242,9 @@ h1 { margin-bottom: 7px; color: #183943; font-size: clamp(26px, 2.5vw, 33px); fo
   .jobs-table th { padding: 0 6px; font-size: 7px; }
   .jobs-table td { padding: 10px 6px; }
   .jobs-table td:nth-child(4), .jobs-table th:nth-child(4) { display: none; }
-  .job-title { min-width: 132px; gap: 6px; }
-  .job-platform { width: 21px; height: 21px; flex-basis: 21px; }
+  .job-title { min-width: 132px; }
   .job-title strong { max-width: 100px; font-size: 9px; }
-  .job-title div span { max-width: 110px; font-size: 8px; }
+  .job-platform { padding: 2px 4px; font-size: 7px; }
   .status-badge { min-height: 20px; gap: 4px; padding: 0 5px; font-size: 0; }
   .status-badge svg { width: 14px; height: 14px; }
   .job-time { font-size: 8px; }

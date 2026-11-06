@@ -4,7 +4,6 @@ import { api } from '../api'
 import { useDashboard } from '../app/DashboardContext'
 import { Icon } from '../components/ui/Icon'
 import PageHeading from '../components/ui/PageHeading'
-import { exclusionSummary } from '../shared/format'
 import type { SearchPreset } from '../types'
 
 export default function PresetsPage() {
@@ -41,8 +40,6 @@ export default function PresetsPage() {
                 <div className="preset-item-copy">
                   <strong>{preset.name}</strong>
                   <span className="platform-badge">{preset.platform === 'hh' ? 'HH.ru' : preset.platform}</span>
-                  <span>{preset.query}</span>
-                  <small>{exclusionSummary(preset.settings?.defaultExclusions ?? null)}</small>
                 </div>
                 {deleteId === preset.id ? (
                   <div className="preset-delete-confirm">
