@@ -1,9 +1,19 @@
 services:
-  collector-backend:
+  collector-playwright:
     build:
-      context: ./collector-backend
+      context: ./collector
       dockerfile: Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: ${COLLECTOR_BACKEND_ENVIRONMENT:-Production}
+      COLLECTOR_TARGET_URL: ${COLLECTOR_TARGET_URL:-https://hh.ru/}
+      PLAYWRIGHT_DISPLAY_NUMBER: ${PLAYWRIGHT_DISPLAY_NUMBER:-50}
+      PLAYWRIGHT_USER_DATA_DIR: /home/pwuser/profile
+    init: true
+    ipc: host
     ports:
-      - "${COLLECTOR_BACKEND_PORT:-8080}:8080"
+      - "127.0.0.1:${PLAYWRIGHT_NOVNC_PORT:-6080}:6080"
+    restart: unless-stopped
+    volumes:
+      - playwright-profile:/home/pwuser/profile
+
+volumes:
+  playwright-profile:
