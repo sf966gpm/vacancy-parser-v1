@@ -1,4 +1,6 @@
 using Microsoft.Playwright;
+using Collector.Playwright.Browser;
+using Collector.Playwright.Hh.Jobs;
 
 const string targetUrl = "https://hh.ru/";
 var userDataDir = Environment.GetEnvironmentVariable("PLAYWRIGHT_USER_DATA_DIR")
@@ -12,16 +14,8 @@ Console.WriteLine($"Opening {uri} in Chromium...");
 Console.WriteLine($"Browser profile: {userDataDir}");
 
 using var playwright = await Playwright.CreateAsync();
-await using var context = await playwright.Chromium.LaunchPersistentContextAsync(
-    userDataDir,
-    new BrowserTypeLaunchPersistentContextOptions
-{
-    Headless = false,
-    ViewportSize = ViewportSize.NoViewport,
-    Args = ["--no-sandbox", "--start-maximized", "--window-position=0,0", "--window-size=1920,1080"]
-});
-
-var page = context.Pages.FirstOrDefault() ?? await context.NewPageAsync();
+await using var browserSession = await BrowserSession.StartAsync(playwright, userDataDir);
+var page = browserSession.HomePage;
 var response = await page.GotoAsync(uri.ToString(), new PageGotoOptions
 {
     WaitUntil = WaitUntilState.DOMContentLoaded,
@@ -35,8 +29,9 @@ var dimensions = await page.EvaluateAsync<string>(
     "() => `${screen.width}x${screen.height} screen, ${innerWidth}x${innerHeight} viewport`");
 Console.WriteLine($"Display size: {dimensions}");
 Console.WriteLine("Connect to the browser at http://localhost:6080/vnc.html?autoconnect=true&resize=scale");
-Console.WriteLine("The browser will stay open. Stop the container with Ctrl+C.");
 
+await using var jobConsumer = await HhJobConsumer.ConnectAsync(browserSession);
+Console.WriteLine("Waiting for parse jobs from RabbitMQ.");
 await Task.Delay(Timeout.InfiniteTimeSpan);
 
 return 0;

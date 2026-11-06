@@ -24,6 +24,14 @@ services:
     environment:
       PLAYWRIGHT_DISPLAY_NUMBER: ${PLAYWRIGHT_DISPLAY_NUMBER:-50}
       PLAYWRIGHT_USER_DATA_DIR: /home/pwuser/profile
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_BROKER_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-collector}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-local-dev-password}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-collector.parse}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     init: true
     ipc: host
     ports:
