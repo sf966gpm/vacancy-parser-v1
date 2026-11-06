@@ -4,5 +4,5 @@ namespace Vacancy.Api.Features.HhJobs;
 public sealed record HhParseJobAcceptedResponse(
     Guid Id,
     string Status,
-    string PresetKey,
+    Guid PresetId,
     DateTimeOffset CreatedAt);

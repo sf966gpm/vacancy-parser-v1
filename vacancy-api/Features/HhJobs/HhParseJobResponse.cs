@@ -3,8 +3,9 @@ namespace Vacancy.Api.Features.HhJobs;
 /// <summary>Saved HH parse job and its latest known processing status.</summary>
 public sealed record HhParseJobResponse(
     Guid Id,
-    string PresetKey,
-    string PresetLabel,
+    Guid? PresetId,
+    string PresetName,
+    string Platform,
     string Query,
     HhJobExclusionsRequest? Exclusions,
     string Status,

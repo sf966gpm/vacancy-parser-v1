@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import type { SearchPreset, UpdatePreset } from '../../types'
+import type { SearchPresetInput, SearchPreset } from '../../types'
 import { Icon } from '../../components/ui/Icon'
 import { exclusionSummary } from '../../shared/format'
 
@@ -18,14 +18,14 @@ export default function PresetEditor({
   editor: EditorState
   busy: boolean
   onCancel: () => void
-  onSave: (key: string, payload: UpdatePreset, isNew: boolean) => Promise<void>
+  onSave: (payload: SearchPresetInput, isNew: boolean) => Promise<void>
 }) {
   const editing = editor.mode === 'edit' ? editor.preset : null
-  const [key, setKey] = useState(editing?.key ?? '')
-  const [label, setLabel] = useState(editing?.label ?? '')
+  const [platform, setPlatform] = useState(editing?.platform ?? 'hh')
+  const [name, setName] = useState(editing?.name ?? '')
   const [query, setQuery] = useState(editing?.query ?? '')
-  const [vacancyIds, setVacancyIds] = useState(editing?.defaultExclusions?.vacancyIds?.join(', ') ?? '')
-  const [categories, setCategories] = useState(editing?.defaultExclusions?.titleCategories?.join(', ') ?? '')
+  const [vacancyIds, setVacancyIds] = useState(editing?.settings?.defaultExclusions?.vacancyIds?.join(', ') ?? '')
+  const [categories, setCategories] = useState(editing?.settings?.defaultExclusions?.titleCategories?.join(', ') ?? '')
   const [formError, setFormError] = useState('')
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -40,32 +40,28 @@ export default function PresetEditor({
     const defaultExclusions = parsedIds.length || titleCategories.length
       ? { vacancyIds: parsedIds, titleCategories }
       : null
-    const nextKey = key.trim().toLowerCase()
-    if (!editing && !/^[a-z0-9][a-z0-9_-]*$/.test(nextKey)) {
-      setFormError('Ключ может содержать латинские буквы, цифры, дефис и подчёркивание.')
-      return
-    }
     setFormError('')
-    await onSave(nextKey, { label: label.trim(), query: query.trim(), defaultExclusions }, !editing)
+    await onSave({ platform, name: name.trim(), query: query.trim(), settings: { defaultExclusions } }, !editing)
   }
 
   return (
     <form className="preset-form" onSubmit={submit}>
       <label className="field-label">
-        Ключ пресета
-        <input required maxLength={100} value={key} onChange={(event) => setKey(event.target.value)} disabled={Boolean(editing)} placeholder="backend-engineer" />
-        <span className="field-hint">Стабильный идентификатор, например backend-engineer</span>
+        Платформа
+        <select required value={platform} onChange={(event) => setPlatform(event.target.value)}>
+          <option value="hh">HH.ru</option>
+        </select>
       </label>
       <label className="field-label">
         Название
-        <input required maxLength={200} value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Backend-разработчики" />
+        <input required maxLength={200} value={name} onChange={(event) => setName(event.target.value)} placeholder="Backend-разработчики" />
       </label>
       <label className="field-label">
         Поисковый запрос
         <textarea required maxLength={500} rows={3} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="C# .NET разработчик" />
       </label>
-      <details className="exclusion-details" open={Boolean(editing?.defaultExclusions)}>
-        <summary>Исключения по умолчанию <span>{exclusionSummary(editing?.defaultExclusions ?? null)}</span></summary>
+      <details className="exclusion-details" open={Boolean(editing?.settings?.defaultExclusions)}>
+        <summary>Исключения по умолчанию <span>{exclusionSummary(editing?.settings?.defaultExclusions ?? null)}</span></summary>
         <label className="field-label">
           ID вакансий
           <textarea rows={2} value={vacancyIds} onChange={(event) => setVacancyIds(event.target.value)} placeholder="123456, 789012" />

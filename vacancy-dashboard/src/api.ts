@@ -38,16 +38,16 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  getPresets: () => request<SearchPreset[]>('/hh/presets'),
-  createPreset: (preset: CreatePreset) => request<SearchPreset>('/hh/presets', {
+  getPresets: () => request<SearchPreset[]>('/presets'),
+  createPreset: (preset: CreatePreset) => request<SearchPreset>('/presets', {
     method: 'POST',
     body: JSON.stringify(preset),
   }),
-  updatePreset: (key: string, preset: UpdatePreset) => request<SearchPreset>(`/hh/presets/${encodeURIComponent(key)}`, {
+  updatePreset: (id: string, preset: UpdatePreset) => request<SearchPreset>(`/presets/${encodeURIComponent(id)}`, {
     method: 'PUT',
     body: JSON.stringify(preset),
   }),
-  deletePreset: (key: string) => request<void>(`/hh/presets/${encodeURIComponent(key)}`, {
+  deletePreset: (id: string) => request<void>(`/presets/${encodeURIComponent(id)}`, {
     method: 'DELETE',
   }),
   getJobs: () => request<ParseJob[]>('/hh/jobs?take=40'),

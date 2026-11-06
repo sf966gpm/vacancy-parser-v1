@@ -3,20 +3,26 @@ export type Exclusions = {
   titleCategories?: string[] | null
 } | null
 
+export type PresetSettings = {
+  defaultExclusions?: Exclusions
+  [key: string]: unknown
+} | null
+
 export type SearchPreset = {
   id: string
-  key: string
-  label: string
+  platform: string
+  name: string
   query: string
-  defaultExclusions: Exclusions
+  settings: PresetSettings
   createdAt: string
   updatedAt: string
 }
 
 export type ParseJob = {
   id: string
-  presetKey: string
-  presetLabel: string
+  presetId: string | null
+  presetName: string
+  platform: string
   query: string
   exclusions: Exclusions
   status: 'pending' | 'queued' | 'completed' | 'failed' | string
@@ -26,11 +32,12 @@ export type ParseJob = {
   failureReason: string | null
 }
 
-export type CreatePreset = {
-  key: string
-  label: string
+export type SearchPresetInput = {
+  platform: string
+  name: string
   query: string
-  defaultExclusions: Exclusions
+  settings: PresetSettings
 }
 
-export type UpdatePreset = Omit<CreatePreset, 'key'>
+export type CreatePreset = SearchPresetInput
+export type UpdatePreset = SearchPresetInput

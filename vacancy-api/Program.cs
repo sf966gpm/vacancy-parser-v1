@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Vacancy.Api.Features.HhJobs;
-using Vacancy.Api.Features.HhPresets;
+using Vacancy.Api.Features.Presets;
 using Vacancy.Api.Features.Vacancies;
 using Vacancy.Api.Persistence;
 using Vacancy.Api.Messaging.RabbitMq;
@@ -20,7 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IHhJobService, HhJobService>();
 builder.Services.AddScoped<IHhJobStatusService, HhJobStatusService>();
-builder.Services.AddScoped<IHhSearchPresetService, HhSearchPresetService>();
+builder.Services.AddScoped<ISearchPresetService, SearchPresetService>();
 builder.Services.AddScoped<IHhVacancyIngestionService, HhVacancyIngestionService>();
 builder.Services.AddSingleton<HhJobPublisher>();
 builder.Services.AddSingleton<IHhJobPublisher>(services =>

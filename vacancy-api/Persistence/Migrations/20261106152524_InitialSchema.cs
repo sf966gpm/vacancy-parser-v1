@@ -12,20 +12,20 @@ namespace Vacancy.Api.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "hh_search_presets",
+                name: "search_presets",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Label = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Platform = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Query = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    DefaultExclusionsJson = table.Column<string>(type: "jsonb", nullable: true),
+                    SettingsJson = table.Column<string>(type: "jsonb", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_hh_search_presets", x => x.Id);
+                    table.PrimaryKey("PK_search_presets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -60,8 +60,7 @@ namespace Vacancy.Api.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     PresetId = table.Column<Guid>(type: "uuid", nullable: true),
                     Platform = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    PresetKey = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    PresetLabel = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    PresetName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     SearchQuery = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     ExclusionsJson = table.Column<string>(type: "jsonb", nullable: true),
                     Status = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
@@ -74,9 +73,9 @@ namespace Vacancy.Api.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_parse_jobs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_parse_jobs_hh_search_presets_PresetId",
+                        name: "FK_parse_jobs_search_presets_PresetId",
                         column: x => x.PresetId,
-                        principalTable: "hh_search_presets",
+                        principalTable: "search_presets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -132,10 +131,9 @@ namespace Vacancy.Api.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_hh_search_presets_Key",
-                table: "hh_search_presets",
-                column: "Key",
-                unique: true);
+                name: "IX_search_presets_Platform_Name",
+                table: "search_presets",
+                columns: new[] { "Platform", "Name" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_outbox_messages_JobId",
@@ -196,7 +194,7 @@ namespace Vacancy.Api.Persistence.Migrations
                 name: "vacancies");
 
             migrationBuilder.DropTable(
-                name: "hh_search_presets");
+                name: "search_presets");
         }
     }
 }

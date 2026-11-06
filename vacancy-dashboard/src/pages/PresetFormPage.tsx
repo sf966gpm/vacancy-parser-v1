@@ -4,26 +4,26 @@ import { api } from '../api'
 import { useDashboard } from '../app/DashboardContext'
 import { Icon } from '../components/ui/Icon'
 import PageHeading from '../components/ui/PageHeading'
-import PresetEditor from '../features/hh-presets/PresetEditor'
+import PresetEditor from '../features/presets/PresetEditor'
 import type { UpdatePreset } from '../types'
 
 export default function PresetFormPage({ mode }: { mode: 'create' | 'edit' }) {
-  const { key } = useParams<{ key: string }>()
+  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { presets, loading, setPresets, setNotice } = useDashboard()
   const [saving, setSaving] = useState(false)
-  const preset = mode === 'edit' ? presets.find((item) => item.key === key) : undefined
+  const preset = mode === 'edit' ? presets.find((item) => item.id === id) : undefined
 
-  async function savePreset(presetKey: string, payload: UpdatePreset, isNew: boolean) {
+  async function savePreset(payload: UpdatePreset, isNew: boolean) {
     setSaving(true)
     try {
       if (isNew) {
-        const created = await api.createPreset({ key: presetKey, ...payload })
-        setPresets((current) => [...current, created].sort((a, b) => a.key.localeCompare(b.key)))
+        const created = await api.createPreset(payload)
+        setPresets((current) => [...current, created].sort((a, b) => a.platform.localeCompare(b.platform) || a.name.localeCompare(b.name)))
         setNotice({ kind: 'success', text: 'Пресет создан.' })
       } else {
-        const updated = await api.updatePreset(presetKey, payload)
-        setPresets((current) => current.map((item) => item.key === presetKey ? updated : item))
+        const updated = await api.updatePreset(preset!.id, payload)
+        setPresets((current) => current.map((item) => item.id === preset!.id ? updated : item))
         setNotice({ kind: 'success', text: 'Изменения сохранены.' })
       }
       navigate('/presets')
@@ -54,7 +54,7 @@ export default function PresetFormPage({ mode }: { mode: 'create' | 'edit' }) {
     <>
       <PageHeading
         title={mode === 'create' ? 'Новый пресет' : 'Изменить пресет'}
-        subtitle={mode === 'create' ? 'Задайте поисковый запрос и исключения по умолчанию.' : `Настройте запрос «${preset!.label}» и его исключения.`}
+        subtitle={mode === 'create' ? 'Выберите платформу, задайте поисковый запрос и исключения по умолчанию.' : `Настройте запрос «${preset!.name}» и его исключения.`}
         action={backAction}
       />
       <section className="presets-panel preset-form-page">

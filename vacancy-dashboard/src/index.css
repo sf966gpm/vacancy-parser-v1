@@ -157,6 +157,7 @@ h1 { margin-bottom: 7px; color: #183943; font-size: clamp(26px, 2.5vw, 33px); fo
 .preset-item-copy { display: grid; gap: 3px; min-width: 0; flex: 1; }
 .preset-item-copy strong { overflow: hidden; color: #334c54; font-size: 10px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
 .preset-item-copy span { overflow: hidden; color: #87969a; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.preset-item-copy .platform-badge { width: fit-content; padding: 2px 5px; border-radius: 4px; color: #397181; background: #edf5f5; font-size: 8px; font-weight: 650; }
 .preset-item-copy small { overflow: hidden; color: #9aa6a9; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .preset-row-actions { @apply flex items-center gap-1.5; margin-left: auto; }
 .preset-row-actions .icon-button, .preset-row-actions .icon-danger { width: 30px; height: 30px; }
@@ -169,8 +170,9 @@ h1 { margin-bottom: 7px; color: #183943; font-size: clamp(26px, 2.5vw, 33px); fo
 
 .preset-form { padding: 0 18px 18px; }
 .field-label { display: grid; gap: 6px; margin-bottom: 11px; color: #52676e; font-size: 10px; font-weight: 600; }
-.field-label input, .field-label textarea { width: 100%; min-height: 35px; padding: 8px 10px; border: 1px solid #d7e1e3; border-radius: 6px; outline: none; color: #304950; background: #fff; font-size: 10px; font-weight: 450; resize: vertical; }
-.field-label input:focus, .field-label textarea:focus { border-color: #5c93a0; box-shadow: 0 0 0 3px rgb(71 132 145 / 12%); }
+.field-label input, .field-label textarea, .field-label select { width: 100%; min-height: 35px; padding: 8px 10px; border: 1px solid #d7e1e3; border-radius: 6px; outline: none; color: #304950; background: #fff; font-size: 10px; font-weight: 450; }
+.field-label textarea { resize: vertical; }
+.field-label input:focus, .field-label textarea:focus, .field-label select:focus { border-color: #5c93a0; box-shadow: 0 0 0 3px rgb(71 132 145 / 12%); }
 .field-label input:disabled { color: #859397; background: #f3f6f6; }
 .field-label input::placeholder, .field-label textarea::placeholder { color: #a0adaf; }
 .field-hint { color: #8a999d; font-size: 9px; font-weight: 450; line-height: 1.4; }

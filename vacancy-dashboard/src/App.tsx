@@ -11,7 +11,7 @@ export default function App() {
         <Route index element={<Navigate to="/presets" replace />} />
         <Route path="presets" element={<PresetsPage />} />
         <Route path="presets/new" element={<PresetFormPage mode="create" />} />
-        <Route path="presets/:key/edit" element={<PresetFormPage mode="edit" />} />
+        <Route path="presets/:id/edit" element={<PresetFormPage mode="edit" />} />
         <Route path="jobs" element={<JobsPage />} />
         <Route path="*" element={<Navigate to="/presets" replace />} />
       </Route>

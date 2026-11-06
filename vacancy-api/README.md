@@ -1,6 +1,6 @@
 # Vacancy API
 
-The API stores HH search presets and parse-job history in PostgreSQL. It publishes jobs through a transactional outbox to the durable `collector.parse` RabbitMQ queue. The collector remains responsible for opening HH in Chromium and processing each job.
+The API stores platform-linked search presets and parse-job history in PostgreSQL. It publishes HH jobs through a transactional outbox to the durable `collector.parse` RabbitMQ queue. The collector remains responsible for opening HH in Chromium and processing each job.
 
 Start the API, RabbitMQ, and collector from the repository root:
 
@@ -8,7 +8,7 @@ Start the API, RabbitMQ, and collector from the repository root:
 docker compose up --build -d
 ```
 
-Create presets with `POST http://localhost:8081/api/hh/presets`, then enqueue a job with `POST http://localhost:8081/api/hh/jobs`. Recent jobs are available from `GET http://localhost:8081/api/hh/jobs`; the OpenAPI document is available at `http://localhost:8081/openapi/v1.json` in development.
+Manage presets for all platforms at `http://localhost:8081/api/presets`. Each preset has a platform, name, query, and platform-specific `settings`. Enqueue an HH job with `POST http://localhost:8081/api/hh/jobs`, passing the preset's `presetId`. Recent HH jobs are available from `GET http://localhost:8081/api/hh/jobs`; the OpenAPI document is available at `http://localhost:8081/openapi/v1.json` in development.
 
 The API does not apply migrations during startup. After starting the stack, apply them manually inside the running API container:
 

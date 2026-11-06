@@ -4,10 +4,9 @@ public sealed class ParseJobEntity
 {
     public Guid Id { get; set; }
     public Guid? PresetId { get; set; }
-    public HhSearchPresetEntity? Preset { get; set; }
+    public SearchPresetEntity? Preset { get; set; }
     public required string Platform { get; set; }
-    public required string PresetKey { get; set; }
-    public required string PresetLabel { get; set; }
+    public required string PresetName { get; set; }
     public required string SearchQuery { get; set; }
     public string? ExclusionsJson { get; set; }
     public required string Status { get; set; }

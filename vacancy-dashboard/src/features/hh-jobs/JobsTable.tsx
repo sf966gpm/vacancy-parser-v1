@@ -48,7 +48,7 @@ function JobRow({ job }: { job: ParseJob }) {
   return (
     <tr>
       <td className="job-cell">
-        <div className="job-title"><span className="job-platform">hh</span><div><strong>{job.presetLabel}</strong><span>{job.query}</span></div></div>
+        <div className="job-title"><span className="job-platform">{job.platform === 'hh' ? 'HH.ru' : job.platform}</span><div><strong>{job.presetName}</strong><span>{job.query}</span></div></div>
         {job.failureReason && <p className="job-failure"><Icon name="alert" size={14} />{job.failureReason}</p>}
       </td>
       <td><StatusBadge status={job.status} /></td>

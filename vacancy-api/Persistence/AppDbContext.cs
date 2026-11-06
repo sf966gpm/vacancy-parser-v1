@@ -5,7 +5,7 @@ namespace Vacancy.Api.Persistence;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<HhSearchPresetEntity> HhSearchPresets => Set<HhSearchPresetEntity>();
+    public DbSet<SearchPresetEntity> SearchPresets => Set<SearchPresetEntity>();
     public DbSet<ParseJobEntity> ParseJobs => Set<ParseJobEntity>();
     public DbSet<OutboxMessageEntity> OutboxMessages => Set<OutboxMessageEntity>();
     public DbSet<VacancyEntity> Vacancies => Set<VacancyEntity>();
@@ -13,17 +13,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<HhSearchPresetEntity>(entity =>
+        modelBuilder.Entity<SearchPresetEntity>(entity =>
         {
-            entity.ToTable("hh_search_presets");
+            entity.ToTable("search_presets");
             entity.HasKey(preset => preset.Id);
-            entity.Property(preset => preset.Key).HasMaxLength(100).IsRequired();
-            entity.HasIndex(preset => preset.Key).IsUnique();
-            entity.Property(preset => preset.Label).HasMaxLength(200).IsRequired();
+            entity.Property(preset => preset.Platform).HasMaxLength(32).IsRequired();
+            entity.Property(preset => preset.Name).HasMaxLength(200).IsRequired();
             entity.Property(preset => preset.Query).HasMaxLength(500).IsRequired();
-            entity.Property(preset => preset.DefaultExclusionsJson).HasColumnType("jsonb");
+            entity.Property(preset => preset.SettingsJson).HasColumnType("jsonb");
             entity.Property(preset => preset.CreatedAt).HasColumnType("timestamp with time zone");
             entity.Property(preset => preset.UpdatedAt).HasColumnType("timestamp with time zone");
+            entity.HasIndex(preset => new { preset.Platform, preset.Name });
         });
 
         modelBuilder.Entity<ParseJobEntity>(entity =>
@@ -31,8 +31,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.ToTable("parse_jobs");
             entity.HasKey(job => job.Id);
             entity.Property(job => job.Platform).HasMaxLength(32).IsRequired();
-            entity.Property(job => job.PresetKey).HasMaxLength(100).IsRequired();
-            entity.Property(job => job.PresetLabel).HasMaxLength(200).IsRequired();
+            entity.Property(job => job.PresetName).HasMaxLength(200).IsRequired();
             entity.Property(job => job.SearchQuery).HasMaxLength(500).IsRequired();
             entity.Property(job => job.ExclusionsJson).HasColumnType("jsonb");
             entity.Property(job => job.Status).HasMaxLength(32).IsRequired();

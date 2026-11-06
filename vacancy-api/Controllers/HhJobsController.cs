@@ -24,7 +24,7 @@ public sealed class HhJobsController(IHhJobService jobService) : ControllerBase
             {
                 Status = StatusCodes.Status404NotFound,
                 Title = "Preset not found",
-                Detail = $"No HH search preset with key '{request.PresetKey}' exists."
+                Detail = $"No HH search preset with ID '{request.PresetId}' exists."
             });
         }
 

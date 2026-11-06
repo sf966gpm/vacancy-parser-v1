@@ -1,8 +1,8 @@
 # Vacancy Dashboard
 
-React and TypeScript dashboard for managing HH search presets and parse jobs.
+React and TypeScript dashboard for managing platform-linked search presets and parse jobs.
 
-The dashboard uses browser routes: `/presets` for the preset list, `/presets/new` to create one, `/presets/:key/edit` to edit one, and `/jobs` for parse jobs. `/` redirects to `/presets`. Each path can be opened directly or reloaded.
+The dashboard uses browser routes: `/presets` for the preset list, `/presets/new` to create one, `/presets/:id/edit` to edit one, and `/jobs` for parse jobs. `/` redirects to `/presets`. Each path can be opened directly or reloaded.
 
 ## Source structure
 

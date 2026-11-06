@@ -221,21 +221,21 @@ public sealed class HhJobConsumer : IAsyncDisposable
         var preset = validatedJob.Preset!;
         var exclusions = validatedJob.Exclusions;
         Console.WriteLine(
-            $"[preset:{preset.Key}] {preset.Label}; " +
+            $"[preset:{preset.Name}] " +
             $"excluding {exclusions?.VacancyIds?.Count ?? 0} vacancy IDs and " +
             $"{exclusions?.TitleCategories?.Count ?? 0} title categories.");
-        Console.WriteLine($"[preset:{preset.Key}] Opening {targetUri}");
+        Console.WriteLine($"[preset:{preset.Name}] Opening {targetUri}");
 
         PageVisitResult result;
         try
         {
-            result = await ProcessJobAsync(targetUri, preset.Key!);
+            result = await ProcessJobAsync(targetUri, preset.Name!);
             Console.WriteLine(
-                $"[preset:{preset.Key}] Finished navigation; HTTP {result.Status?.ToString() ?? "no response"}; title: {result.Title}; URL: {result.Url}");
+                $"[preset:{preset.Name}] Finished navigation; HTTP {result.Status?.ToString() ?? "no response"}; title: {result.Title}; URL: {result.Url}");
         }
         catch (Exception exception)
         {
-            Console.Error.WriteLine($"[preset:{preset.Key}] Job failed; moving message to {DeadLetterQueue}: {exception.Message}");
+            Console.Error.WriteLine($"[preset:{preset.Name}] Job failed; moving message to {DeadLetterQueue}: {exception.Message}");
             if (!await TryReportFailureAsync(jobId, "Collector could not process the parse job."))
             {
                 await RequeueAsync(eventArgs.DeliveryTag);
@@ -319,7 +319,7 @@ public sealed class HhJobConsumer : IAsyncDisposable
         await _channel.BasicNackAsync(deliveryTag, multiple: false, requeue: false);
     }
 
-    private async Task<PageVisitResult> ProcessJobAsync(Uri targetUri, string presetKey)
+    private async Task<PageVisitResult> ProcessJobAsync(Uri targetUri, string presetName)
     {
         IPage? page = null;
 
@@ -331,7 +331,7 @@ public sealed class HhJobConsumer : IAsyncDisposable
         catch (PlaywrightException exception) when (page?.IsClosed == true)
         {
             Console.Error.WriteLine(
-                $"[preset:{presetKey}] Browser closed during the task; reopening the browser and retrying once: {exception.Message}");
+                $"[preset:{presetName}] Browser closed during the task; reopening the browser and retrying once: {exception.Message}");
             page = await _browserSession.ReopenBrowserAndOpenTaskPageAsync();
             return await NavigateAndInspectAsync(page, targetUri);
         }
@@ -372,11 +372,10 @@ public sealed class HhJobConsumer : IAsyncDisposable
         }
 
         if (job.Preset is null
-            || string.IsNullOrWhiteSpace(job.Preset.Key)
-            || string.IsNullOrWhiteSpace(job.Preset.Label)
+            || string.IsNullOrWhiteSpace(job.Preset.Name)
             || string.IsNullOrWhiteSpace(job.Preset.Query))
         {
-            validationError = "Preset must contain non-empty key, label, and query.";
+            validationError = "Preset must contain non-empty name and query.";
             return false;
         }
 

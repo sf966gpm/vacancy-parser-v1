@@ -1,37 +1,42 @@
 @baseUrl = http://localhost:8081
-@presetKey = php
-@jobId = 11111111-1111-1111-1111-111111111111
+@presetId = 11111111-1111-1111-1111-111111111111
+@jobId = 22222222-2222-2222-2222-222222222222
 
-### Create an HH search preset
-POST {{baseUrl}}/api/hh/presets
+### Create a search preset
+POST {{baseUrl}}/api/presets
 Content-Type: application/json
 
 {
-  "key": "{{presetKey}}",
-  "label": "PHP",
+  "platform": "hh",
+  "name": "PHP vacancies",
   "query": "PHP",
-  "defaultExclusions": {
-    "vacancyIds": [],
-    "titleCategories": []
+  "settings": {
+    "defaultExclusions": {
+      "vacancyIds": [],
+      "titleCategories": []
+    }
   }
 }
 
-### List HH search presets
-GET {{baseUrl}}/api/hh/presets
+### List search presets for all platforms
+GET {{baseUrl}}/api/presets
 
-### Get one HH search preset
-GET {{baseUrl}}/api/hh/presets/{{presetKey}}
+### Get one search preset
+GET {{baseUrl}}/api/presets/{{presetId}}
 
-### Update an HH search preset
-PUT {{baseUrl}}/api/hh/presets/{{presetKey}}
+### Update a search preset
+PUT {{baseUrl}}/api/presets/{{presetId}}
 Content-Type: application/json
 
 {
-  "label": "PHP vacancies",
+  "platform": "hh",
+  "name": "PHP vacancies",
   "query": "PHP",
-  "defaultExclusions": {
-    "vacancyIds": [],
-    "titleCategories": ["SEO"]
+  "settings": {
+    "defaultExclusions": {
+      "vacancyIds": [],
+      "titleCategories": ["SEO"]
+    }
   }
 }
 
@@ -40,7 +45,7 @@ POST {{baseUrl}}/api/hh/jobs
 Content-Type: application/json
 
 {
-  "presetKey": "php",
+  "presetId": "{{presetId}}",
   "exclusions": {
     "vacancyIds": [123456789],
     "titleCategories": ["SEO", "QA"]
@@ -53,8 +58,8 @@ GET {{baseUrl}}/api/hh/jobs
 ### Get one HH parse job
 GET {{baseUrl}}/api/hh/jobs/{{jobId}}
 
-### Delete an HH search preset
-DELETE {{baseUrl}}/api/hh/presets/{{presetKey}}
+### Delete a search preset
+DELETE {{baseUrl}}/api/presets/{{presetId}}
 
 ### Check the OpenAPI document
 GET {{baseUrl}}/openapi/v1.json

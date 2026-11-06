@@ -15,7 +15,6 @@ namespace Vacancy.Api.Persistence.Migrations
     [Migration("20261106152524_InitialSchema")]
     partial class InitialSchema
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
@@ -25,7 +24,7 @@ namespace Vacancy.Api.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Vacancy.Api.Persistence.Entities.HhSearchPresetEntity", b =>
+            modelBuilder.Entity("Vacancy.Api.Persistence.Entities.SearchPresetEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,15 +33,15 @@ namespace Vacancy.Api.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DefaultExclusionsJson")
+                    b.Property<string>("SettingsJson")
                         .HasColumnType("jsonb");
 
-                    b.Property<string>("Key")
+                    b.Property<string>("Platform")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
-                    b.Property<string>("Label")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -57,10 +56,9 @@ namespace Vacancy.Api.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Key")
-                        .IsUnique();
+                    b.HasIndex("Platform", "Name");
 
-                    b.ToTable("hh_search_presets", (string)null);
+                    b.ToTable("search_presets", (string)null);
                 });
 
             modelBuilder.Entity("Vacancy.Api.Persistence.Entities.OutboxMessageEntity", b =>
@@ -134,12 +132,7 @@ namespace Vacancy.Api.Persistence.Migrations
                     b.Property<Guid?>("PresetId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("PresetKey")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("PresetLabel")
+                    b.Property<string>("PresetName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
@@ -269,7 +262,7 @@ namespace Vacancy.Api.Persistence.Migrations
 
             modelBuilder.Entity("Vacancy.Api.Persistence.Entities.ParseJobEntity", b =>
                 {
-                    b.HasOne("Vacancy.Api.Persistence.Entities.HhSearchPresetEntity", "Preset")
+                    b.HasOne("Vacancy.Api.Persistence.Entities.SearchPresetEntity", "Preset")
                         .WithMany("Jobs")
                         .HasForeignKey("PresetId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -296,7 +289,7 @@ namespace Vacancy.Api.Persistence.Migrations
                     b.Navigation("Vacancy");
                 });
 
-            modelBuilder.Entity("Vacancy.Api.Persistence.Entities.HhSearchPresetEntity", b =>
+            modelBuilder.Entity("Vacancy.Api.Persistence.Entities.SearchPresetEntity", b =>
                 {
                     b.Navigation("Jobs");
                 });
