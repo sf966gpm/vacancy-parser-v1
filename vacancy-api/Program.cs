@@ -19,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("VacancyDatabase")));
 
 builder.Services.AddScoped<IHhJobService, HhJobService>();
+builder.Services.AddScoped<IHhJobStatusService, HhJobStatusService>();
 builder.Services.AddScoped<IHhSearchPresetService, HhSearchPresetService>();
 builder.Services.AddScoped<IHhVacancyIngestionService, HhVacancyIngestionService>();
 builder.Services.AddSingleton<HhJobPublisher>();
@@ -27,6 +28,7 @@ builder.Services.AddSingleton<IHhJobPublisher>(services =>
 builder.Services.AddHostedService(services =>
     services.GetRequiredService<HhJobPublisher>());
 builder.Services.AddHostedService<HhJobOutboxDispatcher>();
+builder.Services.AddHostedService<HhJobStatusConsumer>();
 builder.Services.AddHostedService<HhVacancyBatchConsumer>();
 
 var app = builder.Build();

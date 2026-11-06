@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Vacancy.Api.Persistence;
+using Vacancy.Api.Persistence.Entities;
 
 namespace Vacancy.Api.Messaging.RabbitMq;
 
@@ -17,8 +18,7 @@ public sealed class HhJobOutboxDispatcher(
         {
             try
             {
-                var message = await GetNextMessageAsync(stoppingToken);
-                if (message is null)
+                if (!await DispatchNextAsync(stoppingToken))
                 {
                     await Task.Delay(
                         TimeSpan.FromSeconds(_waitingForSchema ? 10 : 1),
@@ -26,7 +26,6 @@ public sealed class HhJobOutboxDispatcher(
                     continue;
                 }
 
-                await DispatchAsync(message, stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
@@ -40,7 +39,7 @@ public sealed class HhJobOutboxDispatcher(
         }
     }
 
-    private async Task<PendingOutboxMessage?> GetNextMessageAsync(CancellationToken cancellationToken)
+    private async Task<bool> DispatchNextAsync(CancellationToken cancellationToken)
     {
         await using var scope = scopeFactory.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -48,23 +47,61 @@ public sealed class HhJobOutboxDispatcher(
         if (!await HasMigrationHistoryTableAsync(dbContext, cancellationToken))
         {
             LogWaitingForSchema();
-            return null;
+            return false;
         }
 
         var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken);
         if (pendingMigrations.Any())
         {
             LogWaitingForSchema();
-            return null;
+            return false;
         }
 
         _waitingForSchema = false;
-        return await dbContext.OutboxMessages
-            .AsNoTracking()
-            .Where(message => message.ProcessedAt == null && message.AvailableAt <= DateTimeOffset.UtcNow)
-            .OrderBy(message => message.CreatedAt)
-            .Select(message => new PendingOutboxMessage(message.Id, message.JobId, message.PayloadJson))
-            .FirstOrDefaultAsync(cancellationToken);
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+        var messages = await dbContext.OutboxMessages
+            .FromSqlInterpolated($"""
+                SELECT * FROM "outbox_messages"
+                WHERE "ProcessedAt" IS NULL AND "AvailableAt" <= {DateTimeOffset.UtcNow}
+                ORDER BY "CreatedAt"
+                LIMIT 1
+                FOR UPDATE SKIP LOCKED
+                """)
+            .ToListAsync(cancellationToken);
+        var message = messages.SingleOrDefault();
+        if (message is null)
+        {
+            await transaction.CommitAsync(cancellationToken);
+            return false;
+        }
+
+        try
+        {
+            await publisher.PublishAsync(message.JobId, message.PayloadJson, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            await RecordPublishFailureAsync(dbContext, message, exception, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return true;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        message.ProcessedAt = now;
+        await dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.ParseJobs
+            .Where(job => job.Id == message.JobId && job.Status == "pending")
+            .ExecuteUpdateAsync(updates => updates
+                .SetProperty(job => job.Status, "queued")
+                .SetProperty(job => job.QueuedAt, now), cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+
+        logger.LogInformation("Published HH parse job {JobId} to RabbitMQ.", message.JobId);
+        return true;
     }
 
     private async Task<bool> HasMigrationHistoryTableAsync(
@@ -96,50 +133,12 @@ public sealed class HhJobOutboxDispatcher(
         _waitingForSchema = true;
     }
 
-    private async Task DispatchAsync(PendingOutboxMessage message, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await publisher.PublishAsync(message.JobId, message.PayloadJson, cancellationToken);
-
-            await using var scope = scopeFactory.CreateAsyncScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var outboxMessage = await dbContext.OutboxMessages
-                .Include(outbox => outbox.Job)
-                .SingleAsync(outbox => outbox.Id == message.Id, cancellationToken);
-            var now = DateTimeOffset.UtcNow;
-            outboxMessage.ProcessedAt = now;
-            outboxMessage.Job.Status = "queued";
-            outboxMessage.Job.QueuedAt = now;
-            await dbContext.SaveChangesAsync(cancellationToken);
-
-            logger.LogInformation("Published HH parse job {JobId} to RabbitMQ.", message.JobId);
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            throw;
-        }
-        catch (Exception exception)
-        {
-            await RecordPublishFailureAsync(message.Id, exception, cancellationToken);
-        }
-    }
-
     private async Task RecordPublishFailureAsync(
-        Guid outboxMessageId,
+        AppDbContext dbContext,
+        OutboxMessageEntity outboxMessage,
         Exception exception,
         CancellationToken cancellationToken)
     {
-        await using var scope = scopeFactory.CreateAsyncScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var outboxMessage = await dbContext.OutboxMessages
-            .Include(outbox => outbox.Job)
-            .SingleOrDefaultAsync(outbox => outbox.Id == outboxMessageId, cancellationToken);
-        if (outboxMessage is null)
-        {
-            return;
-        }
-
         outboxMessage.Attempts++;
         outboxMessage.LastError = exception.GetType().Name;
 
@@ -147,9 +146,13 @@ public sealed class HhJobOutboxDispatcher(
         {
             var now = DateTimeOffset.UtcNow;
             outboxMessage.ProcessedAt = now;
-            outboxMessage.Job.Status = "failed";
-            outboxMessage.Job.CompletedAt = now;
-            outboxMessage.Job.FailureReason = "Could not publish the job to RabbitMQ after several attempts.";
+            await dbContext.ParseJobs
+                .Where(job => job.Id == outboxMessage.JobId && job.Status == "pending")
+                .ExecuteUpdateAsync(updates => updates
+                    .SetProperty(job => job.Status, "failed")
+                    .SetProperty(job => job.CompletedAt, now)
+                    .SetProperty(job => job.FailureReason, "Could not publish the job to RabbitMQ after several attempts."),
+                    cancellationToken);
             logger.LogError(
                 exception,
                 "HH parse job {JobId} exceeded the outbox retry limit.",
@@ -168,6 +171,4 @@ public sealed class HhJobOutboxDispatcher(
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }
-
-    private sealed record PendingOutboxMessage(Guid Id, Guid JobId, string PayloadJson);
 }

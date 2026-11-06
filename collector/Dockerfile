@@ -14,8 +14,8 @@ RUN dotnet publish "Collector.Playwright.csproj" -c Release -o /app/publish --no
 
 COPY entrypoint.sh /usr/local/bin/collector-entrypoint
 RUN chmod +x /usr/local/bin/collector-entrypoint \
-    && mkdir -p /home/pwuser/profile \
-    && chown -R pwuser:pwuser /home/pwuser/profile /app/publish
+    && mkdir -p /home/pwuser/profile /home/pwuser/state \
+    && chown -R pwuser:pwuser /home/pwuser/profile /home/pwuser/state /app/publish
 
 ENV PLAYWRIGHT_USER_DATA_DIR=/home/pwuser/profile
 USER pwuser

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Vacancy.Api.Features.HhJobs;
 using Vacancy.Api.Persistence;
 using Vacancy.Api.Persistence.Entities;
@@ -51,7 +52,15 @@ public sealed class HhSearchPresetService(AppDbContext dbContext) : IHhSearchPre
         };
 
         dbContext.HhSearchPresets.Add(preset);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (IsDuplicatePresetKey(exception))
+        {
+            return null;
+        }
+
         return ToResponse(preset);
     }
 
@@ -101,6 +110,13 @@ public sealed class HhSearchPresetService(AppDbContext dbContext) : IHhSearchPre
 
     private static string? SerializeExclusions(HhJobExclusionsRequest? exclusions) =>
         exclusions is null ? null : JsonSerializer.Serialize(exclusions, JsonOptions);
+
+    private static bool IsDuplicatePresetKey(DbUpdateException exception) =>
+        exception.InnerException is PostgresException
+        {
+            SqlState: PostgresErrorCodes.UniqueViolation,
+            ConstraintName: "IX_hh_search_presets_Key"
+        };
 
     private static HhJobExclusionsRequest? DeserializeExclusions(string? json) =>
         json is null ? null : JsonSerializer.Deserialize<HhJobExclusionsRequest>(json, JsonOptions);

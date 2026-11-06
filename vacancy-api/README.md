@@ -16,4 +16,6 @@ The API does not apply migrations during startup. After starting the stack, appl
 docker compose exec vacancy-api dotnet Vacancy.Api.dll --migrate
 ```
 
-The API consumes vacancy batches from the durable `collector.hh.vacancies` queue. It upserts records by `(platform, externalId)` and links each vacancy to the parse job that found it. The collector currently only visits search pages, so it does not publish these batches yet; terminal job statuses will also be updated once the collector emits completion events.
+The collector reports terminal job status to the durable `collector.hh.job-status` queue. Completed job IDs and their status messages are kept in the `collector-state` volume so RabbitMQ redeliveries do not rerun finished browser tasks.
+
+The API also consumes vacancy batches from the durable `collector.hh.vacancies` queue. It upserts records by `(platform, externalId)` and links each vacancy to the parse job that found it. The collector currently only visits search pages, so it does not publish vacancy batches yet.

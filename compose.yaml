@@ -48,6 +48,7 @@ services:
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-local-dev-password}
       RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-collector.parse}
       RABBITMQ_VACANCY_QUEUE: ${RABBITMQ_VACANCY_QUEUE:-collector.hh.vacancies}
+      RABBITMQ_JOB_STATUS_QUEUE: ${RABBITMQ_JOB_STATUS_QUEUE:-collector.hh.job-status}
       ConnectionStrings__VacancyDatabase: Host=postgres;Port=5432;Database=${POSTGRES_DB:-vacancy_parser};Username=${POSTGRES_USER:-vacancy_api};Password=${POSTGRES_PASSWORD:-change-me};GSS Encryption Mode=Disable
     depends_on:
       rabbitmq:
@@ -65,11 +66,13 @@ services:
     environment:
       PLAYWRIGHT_DISPLAY_NUMBER: ${PLAYWRIGHT_DISPLAY_NUMBER:-50}
       PLAYWRIGHT_USER_DATA_DIR: /home/pwuser/profile
+      COLLECTOR_STATE_DIRECTORY: ${COLLECTOR_STATE_DIRECTORY:-/home/pwuser/state}
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_BROKER_PORT: 5672
       RABBITMQ_USER: ${RABBITMQ_USER:-collector}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-local-dev-password}
       RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-collector.parse}
+      RABBITMQ_JOB_STATUS_QUEUE: ${RABBITMQ_JOB_STATUS_QUEUE:-collector.hh.job-status}
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -80,8 +83,10 @@ services:
     restart: unless-stopped
     volumes:
       - playwright-profile:/home/pwuser/profile
+      - collector-state:${COLLECTOR_STATE_DIRECTORY:-/home/pwuser/state}
 
 volumes:
+  collector-state:
   postgres-data:
   playwright-profile:
   rabbitmq-data:

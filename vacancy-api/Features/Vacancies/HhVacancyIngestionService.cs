@@ -20,6 +20,11 @@ public sealed class HhVacancyIngestionService(AppDbContext dbContext) : IHhVacan
             throw new InvalidHhVacancyBatchException("A vacancy batch cannot contain more than 1000 records.");
         }
 
+        if (batch.Vacancies.Any(vacancy => vacancy is null))
+        {
+            throw new InvalidHhVacancyBatchException("A vacancy batch cannot contain null records.");
+        }
+
         var jobExists = await dbContext.ParseJobs
             .AnyAsync(job => job.Id == batch.JobId && job.Platform == Platform, cancellationToken);
         if (!jobExists)
@@ -81,7 +86,7 @@ public sealed class HhVacancyIngestionService(AppDbContext dbContext) : IHhVacan
             vacancy.SalaryFrom = message.SalaryFrom;
             vacancy.SalaryTo = message.SalaryTo;
             vacancy.SalaryCurrency = message.SalaryCurrency;
-            vacancy.PublishedAt = message.PublishedAt;
+            vacancy.PublishedAt = message.PublishedAt?.ToUniversalTime();
             vacancy.LastSeenAt = now;
             vacancy.RawDataJson = message.RawData?.GetRawText();
 
