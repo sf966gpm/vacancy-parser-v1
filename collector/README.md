@@ -2,7 +2,7 @@
 
 A .NET 10 app that launches visible Chromium with Playwright, opens the configured URL, and prints the HTTP status, page title, and final URL. Xvfb provides a 1920×1080 virtual display; Chromium opens maximized and noVNC lets you interact with it.
 
-Set `COLLECTOR_TARGET_URL`, `PLAYWRIGHT_DISPLAY_NUMBER`, and `PLAYWRIGHT_NOVNC_PORT` in the root `.env` file, then start from the project root:
+Set `PLAYWRIGHT_DISPLAY_NUMBER` and `PLAYWRIGHT_NOVNC_PORT` in the root `.env` file, then start from the project root:
 
 ```sh
 docker compose up --build -d

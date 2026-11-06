@@ -1,15 +1,10 @@
 using Microsoft.Playwright;
 
-var targetUrl = Environment.GetEnvironmentVariable("COLLECTOR_TARGET_URL") ?? "https://hh.ru/";
+const string targetUrl = "https://hh.ru/";
 var userDataDir = Environment.GetEnvironmentVariable("PLAYWRIGHT_USER_DATA_DIR")
     ?? Path.Combine(AppContext.BaseDirectory, "browser-profile");
 
-if (!Uri.TryCreate(targetUrl, UriKind.Absolute, out var uri)
-    || uri.Scheme is not ("http" or "https"))
-{
-    Console.Error.WriteLine($"COLLECTOR_TARGET_URL must be an absolute HTTP or HTTPS URL. Value: '{targetUrl}'");
-    return 1;
-}
+var uri = new Uri(targetUrl);
 
 Directory.CreateDirectory(userDataDir);
 

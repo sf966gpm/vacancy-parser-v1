@@ -1,10 +1,27 @@
 services:
+  rabbitmq:
+    image: rabbitmq:4.4.0-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-collector}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-local-dev-password}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ports:
+      - "127.0.0.1:${RABBITMQ_PORT:-5672}:5672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    restart: unless-stopped
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
   collector-playwright:
     build:
       context: ./collector
       dockerfile: Dockerfile
     environment:
-      COLLECTOR_TARGET_URL: ${COLLECTOR_TARGET_URL:-https://hh.ru/}
       PLAYWRIGHT_DISPLAY_NUMBER: ${PLAYWRIGHT_DISPLAY_NUMBER:-50}
       PLAYWRIGHT_USER_DATA_DIR: /home/pwuser/profile
     init: true
@@ -17,3 +34,4 @@ services:
 
 volumes:
   playwright-profile:
+  rabbitmq-data:
