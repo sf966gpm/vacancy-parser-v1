@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { api } from '../api'
 import { DashboardContext, type DashboardContextValue, type Notice } from '../app/DashboardContext'
-import AppFooter from '../components/layout/AppFooter'
 import AppHeader from '../components/layout/AppHeader'
 import AppSidebar from '../components/layout/AppSidebar'
 import NoticeBanner from '../components/layout/NoticeBanner'
@@ -38,6 +37,12 @@ export default function DashboardLayout() {
 
   useEffect(() => { void refresh() }, [refresh])
   useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: 'auto' }) }, [pathname])
+  useEffect(() => {
+    if (!notice) return
+
+    const timeout = window.setTimeout(() => setNotice(null), notice.kind === 'success' ? 4000 : 6000)
+    return () => window.clearTimeout(timeout)
+  }, [notice, setNotice])
 
   const hasActiveJobs = jobs.some((job) => job.status === 'pending' || job.status === 'queued')
   useEffect(() => {
@@ -83,7 +88,6 @@ export default function DashboardLayout() {
               </div>
             )}
             <Outlet />
-            <AppFooter />
           </div>
         </main>
       </div>

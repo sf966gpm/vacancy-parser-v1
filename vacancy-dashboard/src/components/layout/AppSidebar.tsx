@@ -3,18 +3,16 @@ import { useDashboard } from '../../app/DashboardContext'
 import { Icon } from '../ui/Icon'
 
 export default function AppSidebar() {
-  const { presets, connected } = useDashboard()
+  const { connected } = useDashboard()
 
   return (
     <aside className="sidebar">
-      <Link className="brand" to="/" aria-label="Vacancy Desk — главная">
+      <Link className="brand" to="/presets" aria-label="Vacancy Desk — пресеты">
         <span className="brand-mark"><Icon name="mark" size={19} /></span>
         <span className="brand-name">vacancy<span>desk</span></span>
       </Link>
-      <div className="nav-label">Рабочее место</div>
       <nav className="side-nav" aria-label="Основная навигация">
-        <NavLink className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} to="/" end><Icon name="grid" /><span>Обзор</span></NavLink>
-        <NavLink className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} to="/presets"><Icon name="layers" /><span>Пресеты поиска</span><span className="nav-count">{presets.length}</span></NavLink>
+        <NavLink className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} to="/presets"><Icon name="layers" /><span>Пресеты поиска</span></NavLink>
         <NavLink className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} to="/jobs"><Icon name="clock" /><span>Задачи</span></NavLink>
       </nav>
       <div className="sidebar-spacer" />

@@ -2,13 +2,13 @@
 
 React and TypeScript dashboard for managing HH search presets and parse jobs.
 
-The main sections use browser routes: `/` for overview, `/presets` for search presets, and `/jobs` for parse jobs. Each path can be opened directly or reloaded.
+The dashboard uses browser routes: `/presets` for the preset list, `/presets/new` to create one, `/presets/:key/edit` to edit one, and `/jobs` for parse jobs. `/` redirects to `/presets`. Each path can be opened directly or reloaded.
 
 ## Source structure
 
 - `src/app/App.tsx` maps URL paths to pages.
 - `src/layouts/DashboardLayout.tsx` provides the shared shell and dashboard data.
-- `src/components/layout/` contains the sidebar, header, footer, and shared notices.
+- `src/components/layout/` contains the sidebar, header, and shared notices.
 - `src/pages/` contains one component per route.
 - `src/features/` groups preset and job functionality.
 

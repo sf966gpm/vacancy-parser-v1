@@ -1,4 +1,4 @@
-import type { AcceptedJob, CreatePreset, ParseJob, SearchPreset, UpdatePreset } from './types'
+import type { CreatePreset, ParseJob, SearchPreset, UpdatePreset } from './types'
 
 type Problem = {
   title?: string
@@ -51,8 +51,4 @@ export const api = {
     method: 'DELETE',
   }),
   getJobs: () => request<ParseJob[]>('/hh/jobs?take=40'),
-  createJob: (presetKey: string) => request<AcceptedJob>('/hh/jobs', {
-    method: 'POST',
-    body: JSON.stringify({ presetKey }),
-  }),
 }

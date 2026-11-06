@@ -51,13 +51,6 @@ export default function PresetEditor({
 
   return (
     <form className="preset-form" onSubmit={submit}>
-      <div className="form-heading">
-        <div>
-          <span className="section-kicker">{editing ? 'Изменение пресета' : 'Новый пресет'}</span>
-          <h3>{editing ? editing.label : 'Настроить поиск'}</h3>
-        </div>
-        <button className="icon-button quiet" type="button" onClick={onCancel} aria-label="Закрыть форму"><Icon name="close" /></button>
-      </div>
       <label className="field-label">
         Ключ пресета
         <input required maxLength={100} value={key} onChange={(event) => setKey(event.target.value)} disabled={Boolean(editing)} placeholder="backend-engineer" />

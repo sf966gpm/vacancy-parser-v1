@@ -26,13 +26,6 @@ export type ParseJob = {
   failureReason: string | null
 }
 
-export type AcceptedJob = {
-  id: string
-  status: string
-  presetKey: string
-  createdAt: string
-}
-
 export type CreatePreset = {
   key: string
   label: string
