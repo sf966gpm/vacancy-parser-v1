@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:8081
+
+### Enqueue an HH parsing job
+POST {{baseUrl}}/api/hh/jobs
+Content-Type: application/json
+
+{
+  "preset": {
+    "key": "php",
+    "label": "PHP",
+    "query": "PHP"
+  },
+  "exclusions": {
+    "vacancyIds": [123456789],
+    "titleCategories": ["SEO", "QA"]
+  }
+}
+
+### Check the OpenAPI document
+GET {{baseUrl}}/openapi/v1.json

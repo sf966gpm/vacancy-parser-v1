@@ -17,6 +17,25 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
+  vacancy-api:
+    build:
+      context: ./vacancy-api
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_BROKER_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-collector}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-local-dev-password}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-collector.parse}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${VACANCY_API_PORT:-8081}:8080"
+    restart: unless-stopped
+
   collector-playwright:
     build:
       context: ./collector
