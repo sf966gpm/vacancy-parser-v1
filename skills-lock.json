@@ -1,24 +1,19 @@
 {
   "version": 1,
   "skills": {
-    "async-python-patterns": {
-      "source": "wshobson/agents",
+    "csharp-expert": {
+      "source": "dotnet/skills",
       "sourceType": "github",
-      "skillPath": "plugins/python-development/skills/async-python-patterns/SKILL.md",
-      "computedHash": "35bc80697c3ba879e32cee7e2728ed2db0d16499875bb718736fd1160fddc2d6"
-    },
-    "python-expert": {
-      "source": "RightNow-AI/openfang",
-      "sourceType": "github",
-      "skillPath": "crates/openfang-skills/bundled/python-expert/SKILL.md",
-      "computedHash": "16e7d8d35cba599c4f3fa3a62c0b08b723453440f9e49987588f48a2644e1ad7",
+      "skillPath": "plugins/dotnet/skills/csharp-expert/SKILL.md",
+      "computedHash": "bc9867764121407c7ab90ee1ca3dff283f80736fa3a731b88ffd38a8c59b69bd",
       "installMode": "copy"
     },
-    "python-pro": {
-      "source": "jeffallan/claude-skills",
+    "dotnet-webapi": {
+      "source": "dotnet/skills",
       "sourceType": "github",
-      "skillPath": "skills/python-pro/SKILL.md",
-      "computedHash": "e1ab7c98670500555f2dff7efa3fd3b9c9a24c8cf8c071bffe445ff15d04dbf8"
+      "skillPath": "plugins/dotnet-aspnetcore/skills/dotnet-webapi/SKILL.md",
+      "computedHash": "9f9ca386ddefb34ebeaf269c6a7dac0bd0a8e9ea901ad5c489cd4d5e7c61fb22",
+      "installMode": "copy"
     }
   }
 }
