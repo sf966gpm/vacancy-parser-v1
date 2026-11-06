@@ -1,3 +1,4 @@
 .idea
 .local
 .agents/skills
+.env

@@ -1,0 +1,4 @@
+@baseUrl = http://localhost:8080
+
+### Get the hello world message
+GET {{baseUrl}}/api/hello
