@@ -1,6 +1,6 @@
 # Vacancy API
 
-The API accepts HH vacancy parse jobs and publishes them to the durable `collector.parse` RabbitMQ queue. The collector remains responsible for opening HH in Chromium and processing each job.
+The API stores HH search presets and parse-job history in PostgreSQL. It publishes jobs through a transactional outbox to the durable `collector.parse` RabbitMQ queue. The collector remains responsible for opening HH in Chromium and processing each job.
 
 Start the API, RabbitMQ, and collector from the repository root:
 
@@ -8,6 +8,12 @@ Start the API, RabbitMQ, and collector from the repository root:
 docker compose up --build -d
 ```
 
-Submit a job to `POST http://localhost:8081/api/hh/jobs`. In development, the OpenAPI document is available at `http://localhost:8081/openapi/v1.json`.
+Create presets with `POST http://localhost:8081/api/hh/presets`, then enqueue a job with `POST http://localhost:8081/api/hh/jobs`. Recent jobs are available from `GET http://localhost:8081/api/hh/jobs`; the OpenAPI document is available at `http://localhost:8081/openapi/v1.json` in development.
 
-The API currently publishes jobs but does not persist presets, job history, or parsed vacancies. Those features will be added when their storage and result contracts are defined.
+The API does not apply migrations during startup. After starting the stack, apply them manually inside the running API container:
+
+```sh
+docker compose exec vacancy-api dotnet Vacancy.Api.dll --migrate
+```
+
+The API consumes vacancy batches from the durable `collector.hh.vacancies` queue. It upserts records by `(platform, externalId)` and links each vacancy to the parse job that found it. The collector currently only visits search pages, so it does not publish these batches yet; terminal job statuses will also be updated once the collector emits completion events.

@@ -1,20 +1,60 @@
 @baseUrl = http://localhost:8081
+@presetKey = php
+@jobId = 11111111-1111-1111-1111-111111111111
+
+### Create an HH search preset
+POST {{baseUrl}}/api/hh/presets
+Content-Type: application/json
+
+{
+  "key": "{{presetKey}}",
+  "label": "PHP",
+  "query": "PHP",
+  "defaultExclusions": {
+    "vacancyIds": [],
+    "titleCategories": []
+  }
+}
+
+### List HH search presets
+GET {{baseUrl}}/api/hh/presets
+
+### Get one HH search preset
+GET {{baseUrl}}/api/hh/presets/{{presetKey}}
+
+### Update an HH search preset
+PUT {{baseUrl}}/api/hh/presets/{{presetKey}}
+Content-Type: application/json
+
+{
+  "label": "PHP vacancies",
+  "query": "PHP",
+  "defaultExclusions": {
+    "vacancyIds": [],
+    "titleCategories": ["SEO"]
+  }
+}
 
 ### Enqueue an HH parsing job
 POST {{baseUrl}}/api/hh/jobs
 Content-Type: application/json
 
 {
-  "preset": {
-    "key": "php",
-    "label": "PHP",
-    "query": "PHP"
-  },
+  "presetKey": "php",
   "exclusions": {
     "vacancyIds": [123456789],
     "titleCategories": ["SEO", "QA"]
   }
 }
+
+### List recent HH parsing jobs
+GET {{baseUrl}}/api/hh/jobs
+
+### Get one HH parse job
+GET {{baseUrl}}/api/hh/jobs/{{jobId}}
+
+### Delete an HH search preset
+DELETE {{baseUrl}}/api/hh/presets/{{presetKey}}
 
 ### Check the OpenAPI document
 GET {{baseUrl}}/openapi/v1.json

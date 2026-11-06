@@ -2,3 +2,5 @@
 .local
 .agents/skills
 .env
+**/bin/
+**/obj/

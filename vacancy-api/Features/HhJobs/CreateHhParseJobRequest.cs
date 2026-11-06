@@ -5,10 +5,10 @@ namespace Vacancy.Api.Features.HhJobs;
 /// <summary>Request to enqueue an HH vacancy parsing job.</summary>
 public sealed record CreateHhParseJobRequest
 {
-    /// <summary>Search preset to apply to the HH vacancy search.</summary>
-    [Required]
-    public required HhSearchPresetRequest Preset { get; init; }
+    /// <summary>Key of the saved HH search preset to use.</summary>
+    [Required, StringLength(100)]
+    public required string PresetKey { get; init; }
 
-    /// <summary>Vacancies and title categories to exclude from the results.</summary>
+    /// <summary>Optional exclusions that override the preset defaults for this job.</summary>
     public HhJobExclusionsRequest? Exclusions { get; init; }
 }

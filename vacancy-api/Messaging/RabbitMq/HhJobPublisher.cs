@@ -1,7 +1,6 @@
-using System.Text.Json;
+using System.Text;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
-using Vacancy.Api.Features.HhJobs;
 
 namespace Vacancy.Api.Messaging.RabbitMq;
 
@@ -10,7 +9,6 @@ public sealed class HhJobPublisher : IHhJobPublisher, IHostedService, IAsyncDisp
     private const string DeadLetterExchange = "collector.dead-letter";
     private const string DeadLetterQueue = "collector.parse.failed";
     private const string DeadLetterRoutingKey = "collector.parse.failed";
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     private readonly ConnectionFactory _connectionFactory;
     private readonly string _queueName;
@@ -43,7 +41,7 @@ public sealed class HhJobPublisher : IHhJobPublisher, IHostedService, IAsyncDisp
         }
     }
 
-    public async Task PublishAsync(CreateHhParseJobRequest request, CancellationToken cancellationToken)
+    public async Task PublishAsync(Guid messageId, string payloadJson, CancellationToken cancellationToken)
     {
         if (_connection is null)
         {
@@ -58,11 +56,13 @@ public sealed class HhJobPublisher : IHhJobPublisher, IHostedService, IAsyncDisp
             await using var channel = await _connection.CreateChannelAsync(channelOptions, cancellationToken);
             await DeclareTopologyAsync(channel, cancellationToken);
 
-            var body = JsonSerializer.SerializeToUtf8Bytes(request, JsonOptions);
+            var body = Encoding.UTF8.GetBytes(payloadJson);
             var properties = new BasicProperties
             {
                 ContentType = "application/json",
-                DeliveryMode = DeliveryModes.Persistent
+                DeliveryMode = DeliveryModes.Persistent,
+                MessageId = messageId.ToString(),
+                Type = "hh.parse"
             };
 
             await channel.BasicPublishAsync(
