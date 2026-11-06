@@ -2,6 +2,18 @@
 
 React and TypeScript dashboard for managing HH search presets and parse jobs.
 
+The main sections use browser routes: `/` for overview, `/presets` for search presets, and `/jobs` for parse jobs. Each path can be opened directly or reloaded.
+
+## Source structure
+
+- `src/app/App.tsx` maps URL paths to pages.
+- `src/layouts/DashboardLayout.tsx` provides the shared shell and dashboard data.
+- `src/components/layout/` contains the sidebar, header, footer, and shared notices.
+- `src/pages/` contains one component per route.
+- `src/features/` groups preset and job functionality.
+
+To add a page, create it under `src/pages/` and register its path in `src/app/App.tsx`.
+
 ## Run the development container
 
 Start the API stack, then start the dashboard:

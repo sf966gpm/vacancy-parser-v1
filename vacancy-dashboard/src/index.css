@@ -116,6 +116,10 @@ h1 { margin-bottom: 7px; color: #183943; font-size: clamp(26px, 2.5vw, 33px); fo
 .workspace-grid.workspace-jobs, .workspace-grid.workspace-presets { grid-template-columns: minmax(0, 1fr); }
 .workspace-grid.workspace-presets .presets-panel { width: 100%; max-width: 850px; }
 .jobs-panel, .presets-panel { min-width: 0; overflow: hidden; border: 1px solid #dce4e6; border-radius: 10px; background: var(--color-paper); }
+.overview-presets { padding-bottom: 17px; }
+.overview-panel-icon { margin-right: 4px; color: #729099; }
+.overview-presets-copy { margin: 0 20px 15px; color: #708188; font-size: 10px; line-height: 1.6; }
+.overview-presets-link { margin: 0 20px; }
 .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 20px 20px 15px; }
 .section-kicker { display: block; margin-bottom: 5px; color: #7d8e94; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
 .panel-heading h2 { display: flex; align-items: center; gap: 8px; margin: 0; color: #213d47; font-size: 16px; font-weight: 650; letter-spacing: -0.45px; }
