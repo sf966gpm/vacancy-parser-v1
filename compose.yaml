@@ -59,6 +59,29 @@ services:
       - "127.0.0.1:${VACANCY_API_PORT:-8081}:8080"
     restart: unless-stopped
 
+  vacancy-dashboard:
+    image: vacancy-dashboard:dev
+    build:
+      context: ./vacancy-dashboard
+      dockerfile: Dockerfile.dev
+    environment:
+      API_PROXY_TARGET: http://vacancy-api:8080
+      HTTP_PROXY: ${VACANCY_DASHBOARD_PROXY:-}
+      HTTPS_PROXY: ${VACANCY_DASHBOARD_PROXY:-}
+      http_proxy: ${VACANCY_DASHBOARD_PROXY:-}
+      https_proxy: ${VACANCY_DASHBOARD_PROXY:-}
+      npm_config_proxy: ${VACANCY_DASHBOARD_PROXY:-}
+      npm_config_https_proxy: ${VACANCY_DASHBOARD_PROXY:-}
+      NO_PROXY: localhost,127.0.0.1,vacancy-api
+      no_proxy: localhost,127.0.0.1,vacancy-api
+    depends_on:
+      - vacancy-api
+    ports:
+      - "127.0.0.1:${VACANCY_DASHBOARD_PORT:-5173}:5173"
+    restart: unless-stopped
+    volumes:
+      - ./vacancy-dashboard:/app
+
   collector-playwright:
     build:
       context: ./collector
